@@ -40,23 +40,9 @@ LLM API
 
 将秒杀库存缓存至 Redis，通过 Lua 脚本将库存判断与扣减合并为原子操作，减少并发请求下的库存竞争以及数据库压力。
 
-请求 → Redis → Lua 原子扣减 → 业务校验 → MySQL
-
 2. 防止重复下单
 
 使用 幂等 Token + Redisson 分布式锁 + 数据库唯一约束，从请求、业务和数据库多个层面控制重复订单。
-
-请求
- ↓
-幂等校验
- ↓
-分布式锁
- ↓
-订单校验
- ↓
-创建订单
- ↓
-数据库唯一约束
 
 3. 秒杀流量控制
 
@@ -64,7 +50,7 @@ LLM API
 
 4. 微服务治理
 
-通过 Nacos 管理服务注册、发现和配置，Gateway 统一处理请求路由与 JWT 鉴权，各业务服务独立负责对应领域逻辑。
+通过 Nacos 管理服务注册、发现和配置，Gateway 统一处理请求路由与 JWT 鉴权。
 
 5. AI 风险评估
 
@@ -73,15 +59,15 @@ LLM API
 📂 项目结构
 
 flash-sale-system/
-├── gateway-service/          # 网关服务
-├── auth-service/             # 用户认证
-├── product-service/          # 商品服务
-├── inventory-service/        # 库存服务
-├── flash-sale-service/       # 秒杀服务
-├── order-service/            # 订单服务
-├── flash-sale-frontend/      # Vue 3 前端
-├── sql/                      # 数据库脚本
-├── docker-compose.yml        # Docker 配置
+├── gateway-application/       # 网关应用
+├── auth-application/          # 用户认证应用
+├── product-application/       # 商品应用
+├── inventory-application/     # 库存应用
+├── flash-sale-application/    # 秒杀应用
+├── order-application/         # 订单应用
+├── flash-sale-frontend/       # Vue 3 前端
+├── sql/                       # 数据库脚本
+├── docker-compose.yml         # Docker 配置
 └── README.md
 
 ⚙️ 本地运行
@@ -99,7 +85,7 @@ Docker
 
 docker compose up -d
 
-初始化数据库后，启动 Nacos 以及各微服务。
+初始化数据库后，启动 Nacos 以及各个 Application。
 
 启动前端
 

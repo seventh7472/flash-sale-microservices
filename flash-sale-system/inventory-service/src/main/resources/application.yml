@@ -1,0 +1,22 @@
+ server:
+   port: 8103
+ spring:
+   application:
+     name: stock-service
+   datasource:
+     url: jdbc:mysql://localhost:3307/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+     username: root
+     password: root
+   redis:
+     host: localhost
+     port: 6379
+   cloud:
+     nacos:
+       discovery:
+         server-addr: localhost:8848
+         ip: 127.0.0.1
+ mybatis-plus:
+   mapper-locations: classpath:mapper/*.xml
+   type-aliases-package: com.flashsale.inventory.entity
+   configuration:
+     map-underscore-to-camel-case: true

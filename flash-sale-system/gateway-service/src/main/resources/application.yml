@@ -1,0 +1,48 @@
+﻿server:
+  port: 8080
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: goods-service
+          uri: lb://goods-service
+          predicates:
+            - Path=/api/product/**
+        - id: stock-service
+          uri: lb://stock-service
+          predicates:
+            - Path=/api/inventory/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/**
+        - id: seckill-service
+          uri: lb://seckill-service
+          predicates:
+            - Path=/api/flash-sale/**,/api/ai/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+    sentinel:
+      transport:
+        dashboard: localhost:8858
+        port: 8720
+      filter:
+        enabled: true
+      scg:
+        fallback:
+          mode: response
+          response-status: 429
+          response-body: '{"code":1002,"message":"系统繁忙，请稍后重试"}'
+          content-type: application/json

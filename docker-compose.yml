@@ -1,0 +1,156 @@
+
+services:
+  # ========== 基础设施 ==========
+  mysql:
+    image: mysql:8.0
+    container_name: flash-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: flash_sale_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: flash-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 5s
+      retries: 10
+
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: flash-nacos
+    ports:
+      - "8848:8848"
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: ""
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/actuator/health"]
+      timeout: 10s
+      retries: 15
+
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.6
+    container_name: flash-sentinel
+    ports:
+      - "8858:8858"
+
+  # ========== 业务微服务 ==========
+  auth-service:
+    build: ./flash-sale-system/auth-service
+    container_name: flash-auth
+    ports:
+      - "8101:8101"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+
+  gateway-service:
+    build: ./flash-sale-system/gateway-service
+    container_name: flash-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_MAIN_WEBAPPLICATIONTYPE: reactive
+
+  product-service:
+    build: ./flash-sale-system/product-service
+    container_name: flash-product
+    ports:
+      - "8102:8102"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+
+  inventory-service:
+    build: ./flash-sale-system/inventory-service
+    container_name: flash-inventory
+    ports:
+      - "8103:8103"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+
+  order-service:
+    build: ./flash-sale-system/order-service
+    container_name: flash-order
+    ports:
+      - "8105:8105"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+
+  seckill-service:
+    build: ./flash-sale-system/flash-sale-service
+    container_name: flash-seckill
+    ports:
+      - "8104:8104"
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVERADDR: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+      SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD: sentinel:8858
+
+volumes:
+  mysql_data:
+

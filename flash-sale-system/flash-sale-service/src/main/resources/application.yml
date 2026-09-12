@@ -1,0 +1,50 @@
+server:
+  port: 8104
+spring:
+  application:
+    name: seckill-service
+  datasource:
+    url: jdbc:mysql://localhost:3307/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        ip: 127.0.0.1
+    sentinel:
+      transport:
+        dashboard: localhost:8858
+        port: 8719
+      eager: true
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.flashsale.flashsale.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+feign:
+  sentinel:
+    enabled: true
+  circuitbreaker:
+    enabled: true
+
+flash:
+  sale:
+    qps:
+      limit: 500
+    ai:
+      scale:
+        # 单实例可承载的 QPS 容量，供 QpsCollector 与 TrafficPredictor 共用
+        capacity: 200
+
+# DeepSeek AI 增强能力（可配置、可降级）
+# enabled=false 或 api-key 为空/失效 时，AI 相关接口自动回退到原规则逻辑，不影响任何主流程
+deepseek:
+  api-url: https://api.deepseek.com/chat/completions
+  api-key: sk-2d7c823dc4f7458db97ded01aecee299
+  enabled: true

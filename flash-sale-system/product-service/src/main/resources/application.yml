@@ -1,0 +1,23 @@
+ server:
+   port: 8102
+ spring:
+   application:
+     name: goods-service
+   datasource:
+     url: jdbc:mysql://localhost:3307/flash_sale_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+     username: root
+     password: root
+   cloud:
+     nacos:
+       discovery:
+         server-addr: localhost:8848
+         ip: 127.0.0.1
+   redis:
+     host: localhost
+     port: 6379
+ mybatis-plus:
+   mapper-locations: classpath:mapper/*.xml
+   type-aliases-package: com.flashsale.product.entity
+   configuration:
+     map-underscore-to-camel-case: true
+     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

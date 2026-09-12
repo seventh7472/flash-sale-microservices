@@ -1,0 +1,7 @@
+ spring:
+   application:
+     name: seckill-service
+   cloud:
+     nacos:
+       discovery: {server-addr: localhost:8848, ip: 127.0.0.1}
+       config: {server-addr: localhost:8848, file-extension: yaml, refresh-enabled: true}

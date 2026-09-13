@@ -233,8 +233,8 @@ npm run dev
       <br /><b>首页</b>：秒杀会场与商品展示
     </td>
     <td align="center" width="30%">
-      <img src="./photos/category.png" alt="分类" width="100%" />
-      <br /><b>分类</b>：商品分类导航
+      <img src="./photos/detail.png" alt="商品详情" width="100%" />
+      <br /><b>商品详情</b>：秒杀商品详情与抢购
     </td>
     <td align="center" width="30%">
       <img src="./photos/cart.png" alt="购物车" width="100%" />

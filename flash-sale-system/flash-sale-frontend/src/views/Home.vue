@@ -17,12 +17,6 @@
       </el-input>
     </div>
 
-    <!-- 分类标签 -->
-    <div class="cat-bar">
-      <div class="cat-tag" :class="{ active: a === '' }" @click="a = ''; f()">全部</div>
-      <div v-for="c in cs" :key="c" class="cat-tag" :class="{ active: a === c }" @click="a = c; f()">{{ c }}</div>
-    </div>
-
     <!-- 轮播 -->
     <el-carousel :interval="4000" height="200px" class="hero" arrow="hover" indicator-position="none">
       <el-carousel-item v-for="(s, i) in slides" :key="i">
@@ -68,11 +62,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { listActivities, listProducts, listCategories } from '@/api'
+import { listActivities, listProducts } from '@/api'
 
-const all = ref([]), list = ref([]), q = ref(''), a = ref('')
+const all = ref([]), list = ref([]), q = ref('')
 const router = useRouter()
-const cs = ref([])
 const slides = [
   { title: '618 年中大促', sub: '全场 5 折起 · 手慢无', c1: '#ff7a00', c2: '#ff4d2e' },
   { title: '每日精选秒杀', sub: '爆款好物限时抢', c1: '#ff4d2e', c2: '#c81e0f' },
@@ -83,18 +76,11 @@ function firstChar(n) {
   return (n || '?').trim().charAt(0)
 }
 
-function catOf(item) {
-  return item.product?.category || '其他'
-}
-
 function f() {
   let r = all.value
   if (q.value) {
     const s = q.value.toLowerCase()
     r = r.filter(x => (x.name || '').toLowerCase().includes(s))
-  }
-  if (a.value) {
-    r = r.filter(x => catOf(x) === a.value)
   }
   list.value = r
 }
@@ -109,13 +95,10 @@ function open(item) {
 
 onMounted(async () => {
   try {
-    const [ar, pr, cr] = await Promise.all([listActivities(), listProducts(1, 100), listCategories()])
+    const [ar, pr] = await Promise.all([listActivities(), listProducts(1, 100)])
     const actMap = {}
     if (ar.data.code === 200) {
       ;(ar.data.data || []).forEach(act => { actMap[act.productId] = act })
-    }
-    if (cr.data.code === 200) {
-      cs.value = cr.data.data || []
     }
     if (pr.data.code === 200) {
       all.value = (pr.data.data.records || []).map(p => {
@@ -145,40 +128,6 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 1px 0 0 var(--line) inset;
   padding: 4px 16px;
-}
-
-.cat-bar {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  margin-bottom: 16px;
-  padding-bottom: 2px;
-}
-
-.cat-tag {
-  padding: 7px 18px;
-  border-radius: 20px;
-  font-size: 13px;
-  white-space: nowrap;
-  cursor: pointer;
-  background: #fff;
-  color: var(--ink-2);
-  border: 1px solid var(--line);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.cat-tag:hover {
-  border-color: var(--brand);
-  color: var(--brand);
-}
-
-.cat-tag.active {
-  background: var(--brand);
-  color: #fff;
-  border-color: var(--brand);
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(255, 77, 46, 0.28);
 }
 
 .hero {

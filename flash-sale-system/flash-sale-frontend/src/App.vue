@@ -206,6 +206,7 @@ function l() { s.logout(); window.location.href = '/login' }
 
 .page-container {
   flex: 1;
+  width: 100%;
 }
 
 .footer {

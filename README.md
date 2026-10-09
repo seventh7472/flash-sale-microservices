@@ -241,6 +241,16 @@ npm run dev
       <br /><b>购物车</b>：购物车管理
     </td>
   </tr>
+  <tr>
+    <td align="center" width="30%">
+      <img src="./photos/myorder.png" alt="我的订单" width="100%" />
+      <br /><b>我的订单</b>：订单列表与状态
+    </td>
+    <td align="center" width="30%">
+      <img src="./photos/activity_management.png" alt="活动管理" width="100%" />
+      <br /><b>活动管理</b>：秒杀活动配置
+    </td>
+  </tr>
 </table>
 
 ### AI 亮点

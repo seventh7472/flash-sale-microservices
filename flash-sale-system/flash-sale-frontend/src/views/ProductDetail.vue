@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="product" class="product-detail">
-      <el-row :gutter="24">
+      <el-row :gutter="28">
         <el-col :xs="24" :sm="10">
           <el-image :src="product.image" fit="cover" class="product-image" lazy>
             <template #error>
@@ -10,16 +10,25 @@
           </el-image>
         </el-col>
         <el-col :xs="24" :sm="14">
-          <h1 class="product-name">{{ product.name }}</h1>
-          <div class="price-row">
-            <span class="product-price">¥{{ product.originalPrice }}</span>
-            <el-tag type="primary" effect="plain" size="small">普通商品</el-tag>
-          </div>
-          <p v-if="product.description" class="product-desc">分类：{{ product.description }}</p>
-          <div class="action-row">
-            <el-button type="danger" size="large" @click="buyNow">立即购买</el-button>
-            <el-button type="primary" size="large" @click="addToCart">加入购物车</el-button>
-            <el-button size="large" @click="router.push('/')">返回首页</el-button>
+          <div class="detail-info">
+            <h1 class="product-name">{{ product.name }}</h1>
+
+            <div class="price-panel">
+              <div class="price-main">
+                <span class="price-sym">¥</span>
+                <span class="product-price">{{ product.originalPrice }}</span>
+                <span class="tag-plain">普通商品</span>
+              </div>
+            </div>
+
+            <p v-if="product.category" class="product-desc"><span class="desc-label">分类</span>{{ product.category }}</p>
+            <p v-if="product.description" class="product-desc"><span class="desc-label">描述</span>{{ product.description }}</p>
+
+            <div class="action-row">
+              <el-button type="primary" size="large" class="buy-btn" @click="buyNow">立即购买</el-button>
+              <el-button size="large" class="cart-btn" @click="addToCart">加入购物车</el-button>
+              <el-button size="large" @click="router.push('/')">返回首页</el-button>
+            </div>
           </div>
         </el-col>
       </el-row>
@@ -99,54 +108,129 @@ function addToCart() {
 .product-detail {
   max-width: 1000px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 28px;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
 }
+
 .product-image {
   width: 100%;
   height: 400px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
+  background: #f4efeb;
 }
+
 .image-placeholder {
   height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  color: #999;
+  background: #f4efeb;
+  color: var(--ink-3);
   font-size: 56px;
   font-weight: 700;
 }
-.product-name {
-  font-size: 24px;
-  margin: 0 0 16px;
-}
-.price-row {
+
+.detail-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-name {
+  font-size: 26px;
+  line-height: 1.35;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.price-panel {
+  background: var(--brand-soft);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
   margin-bottom: 16px;
 }
-.product-price {
-  font-size: 32px;
-  color: #e1251b;
-  font-weight: bold;
+
+.price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
+
+.price-sym {
+  font-size: 20px;
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.product-price {
+  font-size: 38px;
+  color: var(--brand);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tag-plain {
+  font-size: 12px;
+  color: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
 .product-desc {
   font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
+  color: var(--ink-2);
+  margin-bottom: 12px;
+  line-height: 1.7;
 }
+
+.desc-label {
+  display: inline-block;
+  min-width: 40px;
+  color: var(--ink-3);
+  margin-right: 8px;
+}
+
 .action-row {
   display: flex;
   gap: 12px;
+  margin-top: auto;
+  flex-wrap: wrap;
 }
+
+.buy-btn {
+  flex: 1;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  height: 46px;
+}
+
+.cart-btn {
+  border-radius: 10px;
+  height: 46px;
+}
+
 .state-box {
   max-width: 1000px;
   margin: 40px auto;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 20px;
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 768px) {
+  .product-image,
+  .image-placeholder {
+    height: 280px;
+  }
+  .product-detail {
+    padding: 20px;
+  }
 }
 </style>

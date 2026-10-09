@@ -1,10 +1,11 @@
 <template>
   <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h2 style="font-size:18px;margin:0">活动管理</h2>
+    <div class="page-head">
+      <h2 class="page-title">活动管理</h2>
       <el-button type="primary" @click="show=true">新建活动</el-button>
     </div>
-    <el-table v-if="acts.length" :data="acts" style="width:100%">
+    <div class="table-card" v-if="acts.length">
+      <el-table :data="acts" style="width:100%">
       <el-table-column prop="activityName" label="名称" />
       <el-table-column label="秒杀价"><template #default="{row}">¥{{ row.flashPrice }}</template></el-table-column>
       <el-table-column label="时间"><template #default="{row}">{{ row.startTime?.replace('T',' ')?.slice(0,16) }}</template></el-table-column>
@@ -13,6 +14,7 @@
         <template #default="{row}"><el-button size="small" @click="warm(row)" :loading="warmingId===row.id" :disabled="row.status!==0 || warmingId!==null">预热</el-button></template>
       </el-table-column>
     </el-table>
+    </div>
     <el-empty v-else description="暂无数据" />
     <el-dialog v-model="show" title="新建活动" width="520" @open="resetForm">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="90">
@@ -147,3 +149,27 @@ async function warm(a) {
   } catch {} finally { warmingId.value = null }
 }
 </script>
+
+<style scoped>
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 20px;
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.table-card {
+  background: #fff;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  padding: 8px;
+  overflow: hidden;
+}
+</style>

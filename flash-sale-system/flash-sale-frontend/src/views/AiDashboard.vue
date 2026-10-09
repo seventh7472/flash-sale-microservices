@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 style="font-size:18px;margin:0 0 16px">AI 流量预测</h2>
+    <h2 class="page-title">AI 流量预测</h2>
     <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
       <el-select v-model="sel" placeholder="选择活动" style="width:320px" clearable filterable>
         <el-option v-for="a in acts" :key="a.id" :value="a.id" :label="`${a.activityName}（${statusText(a.status)}）`">
@@ -195,6 +195,13 @@ onBeforeUnmount(() => {
 })
 </script>
 <style scoped>
+.page-title {
+  font-size: 20px;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

@@ -1,0 +1,140 @@
+/* ============================================
+   智能秒杀系统 · 全局设计系统
+   高对比活力促销风 —— 珊瑚红 × 深炭黑
+   ============================================ */
+
+:root {
+  /* 品牌主色 */
+  --brand: #ff4d2e;          /* 珊瑚红（秒杀主色） */
+  --brand-deep: #e63b1f;     /* 深珊瑚（hover/强调） */
+  --brand-soft: #fff1ed;     /* 浅珊瑚底 */
+
+  /* 中性色 */
+  --ink: #1a1412;            /* 主文字 */
+  --ink-2: #4a403c;          /* 次级文字 */
+  --ink-3: #978b86;          /* 弱文字/占位 */
+  --line: #ece6e2;           /* 分割线 */
+  --surface: #ffffff;        /* 卡片 */
+  --bg: #faf6f3;             /* 页面背景（暖白） */
+
+  /* 功能色 */
+  --gold: #ffb300;           /* 抢购/促销 */
+  --orange: #ff7a00;         /* 价格高亮 */
+  --green: #00c48c;          /* 成功 */
+  --red: #ff4d2e;            /* 危险/秒杀 */
+  --blue: #2f6bff;           /* 信息 */
+
+  /* 圆角 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(26, 20, 18, 0.06);
+  --shadow-md: 0 6px 20px rgba(26, 20, 18, 0.08);
+  --shadow-lg: 0 12px 32px rgba(26, 20, 18, 0.12);
+
+  /* Element Plus 主题变量覆盖 */
+  --el-color-primary: #ff4d2e;
+  --el-color-primary-light-3: #ff7a5e;
+  --el-color-primary-light-5: #ff9a85;
+  --el-color-primary-light-7: #ffc0b4;
+  --el-color-primary-light-8: #ffd6ce;
+  --el-color-primary-light-9: #fff1ed;
+  --el-color-primary-dark-2: #e63b1f;
+  --el-color-danger: #ff4d2e;
+  --el-color-success: #00c48c;
+  --el-color-warning: #ffb300;
+  --el-color-error: #ff4d2e;
+  --el-color-info: #978b86;
+  --el-text-color-primary: #1a1412;
+  --el-text-color-regular: #4a403c;
+  --el-text-color-secondary: #978b86;
+  --el-border-color: #e8e0db;
+  --el-border-color-light: #ece6e2;
+  --el-border-color-lighter: #f1ebe7;
+  --el-border-radius-base: 8px;
+  --el-font-size-base: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 页面主容器 */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8cfca;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c4b8b2;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Element Plus 细节统一 */
+.el-button {
+  font-weight: 600;
+}
+.el-button--primary {
+  --el-button-hover-bg-color: var(--brand-deep);
+  --el-button-hover-border-color: var(--brand-deep);
+}
+.el-card {
+  --el-card-border-color: var(--line);
+  border-radius: var(--r-md);
+}
+.el-table {
+  --el-table-header-bg-color: #f7f2ef;
+  --el-table-header-text-color: var(--ink-2);
+}
+
+/* 减少动态偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

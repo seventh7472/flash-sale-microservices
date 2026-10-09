@@ -1,30 +1,65 @@
 <template>
   <div>
-    <el-input placeholder="搜索商品" v-model="q" clearable size="large" style="margin-bottom:16px" @input="f" />
-    <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:16px">
-      <div v-for="c in cs" :key="c.id" class="cat-tag" :class="{ active: a === c.id }" @click="a = c.id; f()">{{ c.label }}</div>
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <el-input
+        placeholder="搜索商品"
+        v-model="q"
+        clearable
+        size="large"
+        @input="f"
+      >
+        <template #prefix>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z" fill="currentColor" />
+          </svg>
+        </template>
+      </el-input>
     </div>
-    <el-carousel :interval="4000" height="160px" style="border-radius:10px;overflow:hidden;margin-bottom:16px">
-      <el-carousel-item v-for="(s,i) in slides" :key="i">
-        <div :style="'height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;background:linear-gradient(135deg,'+s.c1+','+s.c2+')'">{{ s.text }}</div>
+
+    <!-- 分类标签 -->
+    <div class="cat-bar">
+      <div class="cat-tag" :class="{ active: a === '' }" @click="a = ''; f()">全部</div>
+      <div v-for="c in cs" :key="c" class="cat-tag" :class="{ active: a === c }" @click="a = c; f()">{{ c }}</div>
+    </div>
+
+    <!-- 轮播 -->
+    <el-carousel :interval="4000" height="200px" class="hero" arrow="hover" indicator-position="none">
+      <el-carousel-item v-for="(s, i) in slides" :key="i">
+        <div class="hero-slide" :style="{ background: `linear-gradient(120deg, ${s.c1}, ${s.c2})` }">
+          <div class="hero-text">
+            <div class="hero-tag">限时秒杀</div>
+            <div class="hero-title">{{ s.title }}</div>
+            <div class="hero-sub">{{ s.sub }}</div>
+          </div>
+        </div>
       </el-carousel-item>
     </el-carousel>
-    <div style="font-size:13px;color:#999;margin-bottom:12px">{{ list.length }}件商品</div>
+
+    <!-- 商品列表 -->
+    <div class="list-head">
+      <span class="list-count">{{ list.length }} 件商品</span>
+    </div>
     <el-empty v-if="!list.length" description="暂无数据" />
     <div class="card-grid">
       <div v-for="item in list" :key="item.key" class="flash-card" @click="open(item)">
-        <el-image class="card-img" :src="item.product?.image" fit="cover" lazy>
-          <template #placeholder>
-            <div class="img-ph">加载中</div>
-          </template>
-          <template #error>
-            <div class="img-err">{{ firstChar(item.product?.name || item.name) }}</div>
-          </template>
-        </el-image>
+        <div class="card-img-wrap">
+          <el-image class="card-img" :src="item.product?.image" fit="cover" lazy>
+            <template #placeholder>
+              <div class="img-ph">加载中</div>
+            </template>
+            <template #error>
+              <div class="img-err">{{ firstChar(item.product?.name || item.name) }}</div>
+            </template>
+          </el-image>
+          <span v-if="item.type === 'activity'" class="corner-flag">秒杀</span>
+        </div>
         <div class="card-body">
-          <el-tag v-if="item.type === 'activity'" type="danger" effect="dark" size="small" style="align-self:flex-start;margin-bottom:6px">限时秒杀</el-tag>
           <div class="card-name">{{ item.name }}</div>
-          <div class="card-price">¥{{ item.price }}<span v-if="item.origin" class="card-origin">¥{{ item.origin }}</span></div>
+          <div class="card-price">
+            <span class="price-sym">¥</span>{{ item.price }}
+            <span v-if="item.origin" class="card-origin">¥{{ item.origin }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -33,24 +68,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { listActivities, listProducts } from '@/api'
+import { listActivities, listProducts, listCategories } from '@/api'
 
-const all = ref([]), list = ref([]), q = ref(''), a = ref(0)
+const all = ref([]), list = ref([]), q = ref(''), a = ref('')
 const router = useRouter()
-const cs = [
-  { id: 0, label: '全部' },
-  { id: 1, label: '数码' },
-  { id: 2, label: '家电' },
-  { id: 3, label: '运动' },
-  { id: 4, label: '美妆' },
-  { id: 5, label: '食品' },
-  { id: 6, label: '图书' },
-  { id: 7, label: '其他' }
-]
+const cs = ref([])
 const slides = [
-  { text: '618 年中大促 全场5折起', c1: '#1a73e8', c2: '#0d47a1' },
-  { text: '每日精选 限时秒杀 手慢无', c1: '#00bcd4', c2: '#0097a7' },
-  { text: '品质好物 低至1折 速来抢', c1: '#7c4dff', c2: '#536dfe' }
+  { title: '618 年中大促', sub: '全场 5 折起 · 手慢无', c1: '#ff7a00', c2: '#ff4d2e' },
+  { title: '每日精选秒杀', sub: '爆款好物限时抢', c1: '#ff4d2e', c2: '#c81e0f' },
+  { title: '品质好物', sub: '低至 1 折 · 速来抢', c1: '#8b1eff', c2: '#4d2eff' }
 ]
 
 function firstChar(n) {
@@ -58,8 +84,7 @@ function firstChar(n) {
 }
 
 function catOf(item) {
-  const d = item.product?.description
-  return d ? d : '其他'
+  return item.product?.category || '其他'
 }
 
 function f() {
@@ -68,9 +93,8 @@ function f() {
     const s = q.value.toLowerCase()
     r = r.filter(x => (x.name || '').toLowerCase().includes(s))
   }
-  if (a.value > 0) {
-    const label = cs[a.value].label
-    r = r.filter(x => catOf(x) === label)
+  if (a.value) {
+    r = r.filter(x => catOf(x) === a.value)
   }
   list.value = r
 }
@@ -85,10 +109,13 @@ function open(item) {
 
 onMounted(async () => {
   try {
-    const [ar, pr] = await Promise.all([listActivities(), listProducts(1, 100)])
+    const [ar, pr, cr] = await Promise.all([listActivities(), listProducts(1, 100), listCategories()])
     const actMap = {}
     if (ar.data.code === 200) {
       ;(ar.data.data || []).forEach(act => { actMap[act.productId] = act })
+    }
+    if (cr.data.code === 200) {
+      cs.value = cr.data.data || []
     }
     if (pr.data.code === 200) {
       all.value = (pr.data.data.records || []).map(p => {
@@ -110,50 +137,154 @@ onMounted(async () => {
 })
 </script>
 <style scoped>
+.search-bar {
+  margin-bottom: 14px;
+}
+
+.search-bar :deep(.el-input__wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 1px 0 0 var(--line) inset;
+  padding: 4px 16px;
+}
+
+.cat-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  padding-bottom: 2px;
+}
+
 .cat-tag {
-  padding: 6px 16px;
+  padding: 7px 18px;
   border-radius: 20px;
   font-size: 13px;
   white-space: nowrap;
   cursor: pointer;
-  background: #eee;
-  color: #333;
-  border: 1px solid transparent;
-  transition: all .2s;
+  background: #fff;
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  transition: all 0.2s;
   flex-shrink: 0;
 }
-.cat-tag.active {
-  background: #fff;
-  color: #f53f2d;
-  border-color: #f53f2d;
-  font-weight: 600;
+
+.cat-tag:hover {
+  border-color: var(--brand);
+  color: var(--brand);
 }
+
+.cat-tag.active {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 77, 46, 0.28);
+}
+
+.hero {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-slide {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-tag {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+}
+
+.hero-title {
+  color: #fff;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero-sub {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+}
+
+.list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.list-count {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
   align-items: stretch;
 }
+
 .flash-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   height: 100%;
-  transition: transform .15s, box-shadow .15s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .flash-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
 }
+
+.card-img-wrap {
+  position: relative;
+}
+
 .card-img {
   width: 100%;
-  height: 200px;
+  height: 190px;
   display: block;
 }
+
+.corner-flag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(255, 77, 46, 0.4);
+}
+
 .img-ph,
 .img-err {
   width: 100%;
@@ -161,44 +292,52 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0f0f0;
-  color: #999;
+  background: #f4efeb;
+  color: var(--ink-3);
   font-size: 14px;
 }
+
 .img-err {
-  background: #eee;
-  color: #666;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink-2);
 }
+
 .card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px 10px 10px;
+  padding: 10px 12px 12px;
 }
+
 .card-name {
-  font-size: 12px;
-  color: #333;
-  margin-bottom: 6px;
-  height: 36px;
-  line-height: 18px;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.5;
+  min-height: 39px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .card-price {
   margin-top: auto;
-  font-size: 18px;
-  font-weight: 700;
-  color: #f53f2d;
-  height: 24px;
-  line-height: 24px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--brand);
+  line-height: 1;
 }
+
+.price-sym {
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .card-origin {
-  font-size: 11px;
-  color: #bbb;
+  font-size: 12px;
+  color: var(--ink-3);
   text-decoration: line-through;
   margin-left: 4px;
   font-weight: 400;

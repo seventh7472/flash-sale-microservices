@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="activity" class="flash-detail">
-      <el-row :gutter="24">
+      <el-row :gutter="28">
         <el-col :xs="24" :sm="10">
           <el-image :src="product?.image" fit="cover" class="product-image" lazy>
             <template #error>
@@ -10,33 +10,45 @@
           </el-image>
         </el-col>
         <el-col :xs="24" :sm="14">
-          <h1 class="product-name">{{ productName }}</h1>
-          <div class="price-row">
-            <span class="flash-price">¥{{ activity.flashPrice }}</span>
-            <span v-if="product?.originalPrice" class="original-price">¥{{ product.originalPrice }}</span>
-            <el-tag type="danger" effect="dark" size="small">限时秒杀</el-tag>
-          </div>
-          <div class="countdown-row">
-            <span class="countdown-label">{{ countdownLabel }}</span>
-            <template v-if="!isLongRunning">
-              <span class="time-block" :class="{ urgent: isUrgent }">{{ hours }}</span>
-              <span class="colon">:</span>
-              <span class="time-block" :class="{ urgent: isUrgent }">{{ minutes }}</span>
-              <span class="colon">:</span>
-              <span class="time-block" :class="{ urgent: isUrgent }">{{ seconds }}</span>
-            </template>
-          </div>
-          <div class="stock-row">
-            <el-progress :percentage="soldPercent" :stroke-width="14" :color="progressColor" />
-            <p class="stock-text">
-              已抢 {{ soldCount }} / 共 {{ activity.totalStock }}，剩余 {{ remainingText }}
-            </p>
-          </div>
-          <div class="action-row">
-            <el-button type="danger" size="large" :loading="seckillLoading" :disabled="buttonDisabled" @click="handleSeckill">
-              {{ buttonText }}
-            </el-button>
-            <el-button size="large" @click="addToCart">加入购物车</el-button>
+          <div class="detail-info">
+            <div class="flag-row">
+              <span class="flag">限时秒杀</span>
+            </div>
+            <h1 class="product-name">{{ productName }}</h1>
+
+            <div class="price-panel">
+              <div class="price-main">
+                <span class="price-sym">¥</span>
+                <span class="flash-price">{{ activity.flashPrice }}</span>
+                <span v-if="product?.originalPrice" class="original-price">¥{{ product.originalPrice }}</span>
+              </div>
+            </div>
+
+            <div class="countdown-row">
+              <span class="countdown-label">{{ countdownLabel }}</span>
+              <template v-if="!isLongRunning">
+                <span class="time-block" :class="{ urgent: isUrgent }">{{ hours }}</span>
+                <span class="colon">:</span>
+                <span class="time-block" :class="{ urgent: isUrgent }">{{ minutes }}</span>
+                <span class="colon">:</span>
+                <span class="time-block" :class="{ urgent: isUrgent }">{{ seconds }}</span>
+              </template>
+              <span v-else class="running-badge">活动进行中</span>
+            </div>
+
+            <div class="stock-row">
+              <el-progress :percentage="soldPercent" :stroke-width="14" :color="progressColor" />
+              <p class="stock-text">
+                已抢 <b>{{ soldCount }}</b> / 共 {{ activity.totalStock }}，剩余 <b>{{ remainingText }}</b>
+              </p>
+            </div>
+
+            <div class="action-row">
+              <el-button type="primary" size="large" class="seckill-btn" :loading="seckillLoading" :disabled="buttonDisabled" @click="handleSeckill">
+                {{ buttonText }}
+              </el-button>
+              <el-button size="large" class="cart-btn" @click="addToCart">加入购物车</el-button>
+            </div>
           </div>
         </el-col>
       </el-row>
@@ -126,9 +138,9 @@ const soldPercent = computed(() => {
 })
 
 const progressColor = computed(() => {
-  if (soldPercent.value >= 80) return '#f56c6c'
-  if (soldPercent.value >= 50) return '#e6a23c'
-  return '#409eff'
+  if (soldPercent.value >= 80) return '#ff4d2e'
+  if (soldPercent.value >= 50) return '#ffb300'
+  return '#ff7a00'
 })
 
 const remainingText = computed(() => (remaining.value === null ? '--' : remaining.value))
@@ -233,90 +245,187 @@ onUnmounted(() => {
 .flash-detail {
   max-width: 1000px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 28px;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
 }
+
 .product-image {
   width: 100%;
   height: 400px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
+  background: #f4efeb;
 }
+
 .image-placeholder {
   height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  color: #999;
+  background: #f4efeb;
+  color: var(--ink-3);
   font-size: 56px;
   font-weight: 700;
 }
-.product-name {
-  font-size: 24px;
-  margin: 0 0 16px;
-}
-.price-row {
+
+.detail-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  height: 100%;
+}
+
+.flag-row {
+  margin-bottom: 10px;
+}
+
+.flag {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff7a00, #ff4d2e);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.product-name {
+  font-size: 26px;
+  line-height: 1.35;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.price-panel {
+  background: var(--brand-soft);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
   margin-bottom: 16px;
 }
-.flash-price {
-  font-size: 32px;
-  color: #e1251b;
-  font-weight: bold;
+
+.price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
+
+.price-sym {
+  font-size: 20px;
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.flash-price {
+  font-size: 38px;
+  color: var(--brand);
+  font-weight: 800;
+  line-height: 1;
+}
+
 .original-price {
-  font-size: 18px;
-  color: #999;
+  font-size: 16px;
+  color: var(--ink-3);
   text-decoration: line-through;
 }
+
 .countdown-row {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
+
 .countdown-label {
   font-size: 14px;
-  color: #666;
-  margin-right: 8px;
+  color: var(--ink-2);
+  margin-right: 10px;
+  font-weight: 600;
 }
+
 .time-block {
-  background: #333;
+  background: #1a1412;
   color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: bold;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-weight: 700;
   font-size: 18px;
-  min-width: 36px;
+  min-width: 38px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
+
 .time-block.urgent {
-  background: #e1251b;
+  background: var(--brand);
 }
+
 .colon {
-  margin: 0 4px;
-  font-weight: bold;
-  color: #e1251b;
+  margin: 0 5px;
+  font-weight: 700;
+  color: var(--brand);
 }
-.stock-row {
-  margin-bottom: 20px;
-}
-.stock-text {
-  margin: 8px 0 0;
+
+.running-badge {
+  background: var(--green);
+  color: #fff;
   font-size: 13px;
-  color: #666;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 6px;
 }
+
+.stock-row {
+  margin-bottom: 24px;
+}
+
+.stock-text {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.stock-text b {
+  color: var(--brand);
+  font-weight: 700;
+}
+
 .action-row {
   display: flex;
   gap: 12px;
+  margin-top: auto;
 }
+
+.seckill-btn {
+  flex: 1;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+  height: 46px;
+}
+
+.cart-btn {
+  border-radius: 10px;
+  height: 46px;
+}
+
 .state-box {
   max-width: 1000px;
   margin: 40px auto;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 20px;
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 768px) {
+  .product-image,
+  .image-placeholder {
+    height: 280px;
+  }
+  .flash-detail {
+    padding: 20px;
+  }
 }
 </style>

@@ -1,8 +1,31 @@
+# ===== Java / Maven =====
 target/
 *.class
-*.log
-out/
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# ===== IDE =====
 .idea/
 *.iml
-node_modules/
-dist/ck
+.vscode/
+*.swp
+*.swo
+
+# ===== 日志 =====
+logs/
+*.log
+logs-*.log
+
+# ===== 系统 / 本地 =====
+.DS_Store
+Thumbs.db
+
+# ===== WorkBuddy 项目数据（本地工作记录，不上传） =====
+.workbuddy/

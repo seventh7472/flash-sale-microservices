@@ -1,19 +1,35 @@
 <template>
   <div>
-    <h2 style="font-size:18px;margin:0 0 16px">我的订单</h2>
-    <el-table :data="orders" style="width:100%" v-if="orders.length">
-      <el-table-column prop="orderNo" label="订单号" width="200"><template #default="{row}"><el-button link @click="$router.push('/order/'+row.orderNo)" style="font-size:13px">{{ row.orderNo }}</el-button></template></el-table-column>
-      <el-table-column label="金额" width="120"><template #default="{row}">¥{{ row.totalPrice }}</template></el-table-column>
-      <el-table-column label="状态" width="120"><template #default="{row}"><el-tag :type="['warning','success','info','danger'][row.status]">{{ ['待支付','已支付','已取消','已退款'][row.status] }}</el-tag></template></el-table-column>
-      <el-table-column label="时间"><template #default="{row}">{{ row.createTime?.replace('T',' ') }}</template></el-table-column>
-      <el-table-column label="操作" width="160">
-        <template #default="{row}">
-          <el-button v-if="row.status===0" size="small" type="success" :loading="payingNo===row.orderNo" :disabled="!!payingNo || !!cancelingNo" @click="pay(row.orderNo)">支付</el-button>
-          <el-button v-if="row.status===0" size="small" :loading="cancelingNo===row.orderNo" :disabled="!!payingNo || !!cancelingNo" @click="cancel(row.orderNo)">取消</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-empty v-else description="暂无数据" />
+    <h2 class="page-title">我的订单</h2>
+    <div class="orders-card" v-if="orders.length">
+      <el-table :data="orders" style="width: 100%">
+        <el-table-column prop="orderNo" label="订单号" width="200">
+          <template #default="{ row }">
+            <el-button link type="primary" @click="$router.push('/order/' + row.orderNo)">{{ row.orderNo }}</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="金额" width="120">
+          <template #default="{ row }">
+            <span class="amount">¥{{ row.totalPrice }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="120">
+          <template #default="{ row }">
+            <el-tag :type="['warning', 'success', 'info', 'danger'][row.status]">{{ ['待支付', '已支付', '已取消', '已退款'][row.status] }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="时间">
+          <template #default="{ row }">{{ row.createTime?.replace('T', ' ') }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="160">
+          <template #default="{ row }">
+            <el-button v-if="row.status === 0" size="small" type="primary" :loading="payingNo === row.orderNo" :disabled="!!payingNo || !!cancelingNo" @click="pay(row.orderNo)">支付</el-button>
+            <el-button v-if="row.status === 0" size="small" :loading="cancelingNo === row.orderNo" :disabled="!!payingNo || !!cancelingNo" @click="cancel(row.orderNo)">取消</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <el-empty v-else description="暂无订单" />
   </div>
 </template>
 <script setup>
@@ -56,3 +72,24 @@ async function cancel(no) {
   } finally { cancelingNo.value = null }
 }
 </script>
+<style scoped>
+.page-title {
+  font-size: 20px;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.orders-card {
+  background: #fff;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  padding: 8px;
+  overflow: hidden;
+}
+
+.amount {
+  font-weight: 700;
+  color: var(--brand);
+}
+</style>
